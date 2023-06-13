@@ -19,3 +19,37 @@ js是单线程的，如果某段程序需要等待一会再执行，后面的程
     先执行同步任务，遇到宏任务就像将其放入宏任务队列，遇到微任务就将其放入微任务队列，同步任务执行完就去先执行当前任务队列中的微任务再去执行宏任务
  ```
 + 主线程不断重复上面的步骤
+
+示例:
+```
+console.log('script start')
+
+async function async1() {
+  await async2()
+  console.log('async1')
+}
+async function async2() {
+  console.log('async2') 
+}
+async1()
+
+setTimeout(function() {
+  console.log('setTimeout')
+}, 0)
+
+new Promise(resolve => {
+  console.log('Promise')
+  resolve()
+})
+  .then(function() {
+    console.log('promise1')
+  })
+  .then(function() {
+    console.log('promise2')
+  })
+
+console.log('script end')
+```
+```
+script start -> async2 -> Promise -> script end -> async1 -> promise1 -> promise2 -> setTimeout
+```
