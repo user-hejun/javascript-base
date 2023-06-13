@@ -1,3 +1,4 @@
+// new 函数实现
 function MyNew() {
   let obj = new Object({})
   const constructor = [].slice.call(arguments)
@@ -5,3 +6,4 @@ function MyNew() {
   const res = constructor.apply(obj, arguments)
   return typeof res === 'object' ? res : obj
 }
+
