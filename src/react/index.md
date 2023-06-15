@@ -1,5 +1,5 @@
 # React 知识点
-
+React的三大特色（虚拟DOM、组件开发、多端适配）
 
 
 ## setState 是同步还是异步
@@ -20,3 +20,17 @@
 
 缺点:class组件的三个生命周期函数合并在一个生命周期函数内。   
 
+## hooks 模拟生命周期
+```
+// componentDidMount，必须加[],不然会默认每次渲染都执行
+useEffect(()=>{
+}, [])
+
+// componentDidUpdate
+useEffect(()=>{
+document.title = `You clicked ${count} times`;
+return()=>{
+// 以及 componentWillUnmount 执行的内容 
+}
+}, [count])
+```
