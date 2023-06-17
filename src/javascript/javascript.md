@@ -14,7 +14,7 @@ JavaScript引擎需要用栈来维护程序执行期间的上下文的状态，�
 堆空间存储的数据比较复杂，大致可以划分为下面 5 个区域：代码区（Code Space）、Map 区(Map Space)、大对象区（Large Object Space）、新生代（New Space）、老生代（Old Space）。
 其他几个不重要，关键是新生代（内存）和老生代（内存）。
 
-新生代内存是临时分配的内存，存活时间段，老生代内存是常驻内存，存活时间长。
+新生代内存是临时分配的内存，存活时间短，老生代内存是常驻内存，存活时间长。
 ![堆](./img/new-old.png)
 
 ### 新生代内存回收
@@ -51,3 +51,188 @@ JavaScript引擎需要用栈来维护程序执行期间的上下文的状态，�
 
 ![堆](./img/markimg.png)
 通俗理解，就是把垃圾回收这个大的任务分成一个个小任务，穿插在 JavaScript任务中间执行，这个过程其实跟 React Fiber 的设计思路类似。
+
+
+
+
+# JS十大排序算法
+1. 冒泡排序
+冒泡排序的特点，是一个个数进行处理。
+```
+function bubbleSort(arr){
+	const len = arr.length;
+	for(let i = 0; i < len - 1; i++){
+		for(let j = 0; j < len - i - 1; j++){
+			if(arr[j] > arr[j+1]){
+				const tmp = arr[j+1];
+				arr[j+1] = arr[j];
+				arr[j] = tmp;
+			}
+		}
+	}
+ 
+	return arr;
+}
+```
+2. 快速排序
+快速排序，使用的是分治法的思想。
+通过选定一个数字作为比较值，将要排序其他数字，分为 >比较值 和 <比较值，两个部分。并不断重复这个步骤，直到只剩要排序的数字只有本身，则排序完成。
+```
+function quickSort(arr){
+ 
+	sort(arr, 0, arr.length - 1);
+	return arr;
+ 
+ 
+	function sort(arr, low, high){
+		if(low >= high){
+			return;
+		}
+	
+		let i = low;
+		let j = high;
+		const x = arr[i]; // 取出比较值x，当前位置i空出，等待填入
+		while(i < j){
+			// 从数组尾部，找出比x小的数字
+			while(arr[j] >= x && i < j){
+				j--;
+			}
+			// 将空出的位置，填入当前值， 下标j位置空出
+			// ps：比较值已经缓存在变量x中
+			if(i < j){
+				arr[i] = arr[j]
+				i++;
+			}
+ 
+			// 从数组头部，找出比x大的数字
+			while(arr[i] <= x && i < j){
+				i++;
+			}
+			// 将数字填入下标j中，下标i位置突出
+			if(i < j){
+				arr[j] = arr[i]
+				j--;
+			}
+			// 一直循环到左右指针i、j相遇，
+			// 相遇时，i==j, 所以下标i位置是空出的
+		}
+ 
+		arr[i] = x; // 将空出的位置，填入缓存的数字x，一轮排序完成
+ 
+		// 分别对剩下的两个区间进行递归排序
+		sort(arr, low, i - 1);
+		sort(arr, i+1, high);
+	}
+}
+```
+
+3. 希尔排序
+希尔排序是一种插入排序的算法，它是对简单的插入排序进行改进后，更高效的版本。由希尔（Donald Shell）于1959年提出。
+特点是利用增量，将数组分成一组组子序列，然后对子序列进行插入排序。
+由于增量是从大到小，逐次递减，所以也称为缩小增量排序。
+```
+
+function shellSort(arr){
+	// 分组规则 gap/2 递减
+	for(let gap = Math.floor(arr.length/2); gap > 0; gap = Math.floor(gap/2)){
+		for(let i = gap; i < arr.length; i++){
+			let j = i;
+			// 分组内数字，执行插入排序，
+			// 当下标大的数字，小于 下标小的数字，进行交互
+			// 这里注意，分组内的数字，并不是一次性比较完，需要i逐步递增，囊括下个分组内数字
+			while(j - gap >= 0 && arr[j] < arr[j - gap]){
+				swap(j, j-gap);
+				j = j - gap;
+			}
+		}
+	}
+ 
+	return arr;
+ 
+	function swap(a, b){
+		const tmp = arr[a];
+		arr[a] = arr[b];
+		arr[b] = tmp;
+	}
+}
+```
+
+4. 选择排序
+```
+function selectionSort(arr){
+	const len = arr.length;
+ 
+	for(let i = 0; i < len-1; i++){
+		let minIndex = i;
+		for(let j = i+1; j < len; j++){
+			if(arr[j] < arr[minIndex]){
+				minIndex = j; // 保存最小数的下标
+			}
+		}
+ 
+		const tmp = arr[i];
+		arr[i] = arr[minIndex];
+		arr[minIndex] = tmp;
+	}
+ 
+	return arr;
+}
+```
+
+5. 并归排序
+归并排序，利用分治思想，将大的数组，分解为小数组，直至单个元素。然后，使用选择排序的方式，对分拆的小数组，进行回溯，并有序合并，直至合并为一个大的数组。
+```
+function mergeSort(arr){
+ 
+	return sort(arr, 0, arr.length - 1); // 注意右区间是arr.length - 1
+ 
+	// sort方法，进行递归
+	function sort(arr, left, right){
+		
+		// 当left !== right时，证明还没分拆到最小元素
+		if(left < right){
+			// 取中间值，分拆为两个小的数组
+			const mid = Math.floor((left+right) / 2);
+			const leftArr = sort(arr, left, mid);
+			const rightArr = sort(arr, mid+1, right);
+			// 递归合并
+			return merge(leftArr, rightArr)
+		}
+ 
+		// left == right, 已经是最小元素，直接返回即可
+		return left >= 0 ? [arr[left]] : [];
+	}
+ 
+	// 合并两个有序数组
+	function merge(leftArr, rightArr){
+		let left = 0;
+		let right = 0;
+		const tmp = [];
+ 
+		// 使用双指针，对两个数组进行扫描
+		while(left < leftArr.length && right < rightArr.length){
+			if(leftArr[left] <= rightArr[right]){
+				tmp.push(leftArr[left++]);
+			}else{
+				tmp.push(rightArr[right++]);
+			}
+		}
+ 
+		// 合并剩下的内容
+		if(left < leftArr.length){
+			while(left < leftArr.length){
+				tmp.push(leftArr[left++]);
+			}
+		}
+ 
+		if(right < rightArr.length){
+			while(right < rightArr.length){
+				tmp.push(rightArr[right++]);
+			}
+		}
+ 
+		return tmp;
+	}
+ 
+}
+```
