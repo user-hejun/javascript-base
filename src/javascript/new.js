@@ -7,3 +7,4 @@ function MyNew() {
   return typeof res === 'object' ? res : obj
 }
 
+Object.defineProperty
